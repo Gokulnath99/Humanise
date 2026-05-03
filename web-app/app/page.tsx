@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 
-type HumaniseMode = "subtle" | "natural" | "casual";
+type HumaniseMode = "subtle" | "casual" | "executive";
 
 const MODES: { key: HumaniseMode; label: string; description: string }[] = [
   { key: "subtle", label: "Subtle", description: "Light polish, keeps structure" },
-  { key: "natural", label: "Natural", description: "Balanced rewrite, adds flow" },
-  { key: "casual", label: "Casual", description: "Conversational, informal tone" },
+  { key: "casual", label: "Casual", description: "Like texting a friend" },
+  { key: "executive", label: "Executive", description: "Confident, direct, professional" },
 ];
+
 
 export default function Home() {
   const [inputText, setInputText] = useState("");

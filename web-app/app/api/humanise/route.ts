@@ -6,50 +6,66 @@ const anthropic = new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
-type HumaniseMode = "subtle" | "natural" | "casual";
+type HumaniseMode = "subtle" | "casual" | "executive";
 
 const MODE_PROMPTS: Record<HumaniseMode, string> = {
-  subtle: `You are a text humaniser. Your job is to lightly polish AI-generated text while keeping its structure intact.
+  subtle: `You are rewriting text to sound authentically human. 
 
-Rules:
-- Keep the original structure and flow mostly unchanged
-- Use contractions (don't, won't, it's) instead of formal forms
-- Replace 2-3 overly formal words with natural equivalents
-- Vary sentence length slightly where it feels robotic
-- Keep the tone professional but not stiff
-- Minimal changes - just enough to remove the "AI feel"
+DETECTION SIGNALS TO AVOID:
+- Low perplexity: Don't always pick the most obvious next word
+- Uniform burstiness: Vary sentence length dramatically (5 words, then 25, then 12)
+- Predictable transitions: Never use "Furthermore", "Moreover", "Additionally"
+- Hedging phrases: Remove "It's important to note", "It should be mentioned"
+- Over-organization: Don't make every paragraph follow the same structure
 
-IMPORTANT: Output ONLY the humanised text. No explanations, no preamble. Just the rewritten text.`,
+HUMAN PATTERNS TO ADD:
+- Occasional sentence fragments. Like this.
+- Start some sentences with "And" or "But"
+- Use specific details over generic statements
+- Include one slightly unexpected word choice per paragraph
+- Let some sentences run a bit long with natural tangents
+- Vary paragraph lengths (some 2 sentences, some 5)
 
-  natural: `You are a text humaniser. Your job is to make AI-generated text sound like it was written by a real person.
+Keep the meaning intact. Output ONLY the rewritten text.`,
 
-Rules:
-- Vary sentence length naturally (mix short punchy sentences with longer ones)
-- Add transitional phrases humans use: "honestly", "I think", "to be fair", "basically"
-- Occasionally start sentences with "And" or "But"
-- Replace overly formal words with casual equivalents
-- Add 1-2 minor imperfections per paragraph (but nothing distracting)
-- Use contractions (don't, won't, it's) instead of formal forms
-- Break up long sentences into shorter ones sometimes
-- Add the occasional filler word or hesitation
-- Keep the core meaning intact
+  casual: `Rewrite this like a real person texting a friend.
 
-IMPORTANT: Output ONLY the humanised text. No explanations, no preamble. Just the rewritten text.`,
+AVOID AI TELLS:
+- Perfect grammar (break rules sometimes)
+- Uniform rhythm (mix it up wildly)
+- Generic phrases ("in today's world", "it goes without saying")
+- Balanced structure (humans ramble, then get punchy)
 
-  casual: `You are a text humaniser. Your job is to make AI-generated text sound conversational and informal.
+ADD HUMAN ELEMENTS:
+- Contractions everywhere (don't, won't, it's, that's, we're)
+- Filler words scattered naturally: "like", "honestly", "I mean", "you know"
+- Rhetorical questions: "Right?" "Know what I mean?"
+- Incomplete thoughts that trail off...
+- Mix formal and slang in the same sentence
+- Personal interjections: "which is wild", "kind of annoying actually"
+- One run-on sentence that captures how people actually talk when they're explaining something they're excited about
 
-Rules:
-- Write like you're texting a friend or colleague
-- Use plenty of contractions and casual phrases
-- Add filler words: "like", "you know", "I mean", "kinda", "pretty much"
-- Start sentences with "So", "And", "But", "Honestly", "Look"
-- Break formal sentences into shorter, punchier ones
-- Use casual expressions and slang where appropriate
-- Add personal asides or reactions
-- It's okay to be slightly imperfect - that's the point
-- Keep the core meaning but make it sound like real speech
+Output ONLY the rewritten text.`,
 
-IMPORTANT: Output ONLY the humanised text. No explanations, no preamble. Just the rewritten text.`,
+  executive: `Rewrite as a confident executive speaking to a peer. Direct, human, no corporate speak.
+
+AVOID AI PATTERNS:
+- Hedge words (potentially, might, could possibly)
+- Passive voice (use active: "We did X" not "X was done")
+- Balanced paragraph structure
+- Predictable sentence openings
+- Generic business phrases ("leverage synergies", "move the needle")
+
+EXECUTIVE VOICE:
+- Lead with the point. Support after.
+- Short declarative sentences. Then a longer one to explain.
+- "Look," "Here's the reality," "Bottom line"
+- Specific numbers and examples over vague claims
+- Confident but not arrogant: "This works" not "This could work"
+- Occasional informal aside: "—and honestly, that surprised me—"
+- One bold opinion per paragraph
+
+Output ONLY the rewritten text.`,
 };
 
 export async function POST(request: NextRequest) {
@@ -70,9 +86,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const validMode: HumaniseMode = ["subtle", "natural", "casual"].includes(mode)
-      ? mode
-      : "natural";
+    const validMode: HumaniseMode = ["subtle", "casual", "executive"].includes(mode)
+        ? mode
+        : "subtle";
+
     const prompt = MODE_PROMPTS[validMode];
 
     const message = await anthropic.messages.create({
