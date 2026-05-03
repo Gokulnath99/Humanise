@@ -1,9 +1,10 @@
-import Groq from "groq-sdk";
+import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+
+const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+})
 
 type HumaniseMode = "subtle" | "natural" | "casual";
 
@@ -74,19 +75,20 @@ export async function POST(request: NextRequest) {
       : "natural";
     const prompt = MODE_PROMPTS[validMode];
 
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "user",
-          content: `${prompt}\n\nText to humanise:\n${text}`,
-        },
-      ],
-      max_tokens: 4096,
-      temperature: 0.7,
+    const message = await anthropic.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 4096,
+        messages: [
+            {
+                role: "user",
+                content: `${prompt}\n\nText to humanise:\n${text}`,
+            },
+        ],
     });
 
-    const humanisedText = completion.choices[0]?.message?.content || "";
+    const humanisedText = message.content[0].type === "text"
+    ? message.content[0].text
+    : "";
 
     return NextResponse.json({ humanisedText });
   } catch (error) {
