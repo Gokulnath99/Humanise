@@ -1,26 +1,99 @@
+/* humanise — design tokens (Scribe direction, dark default)
+   Compatible with Tailwind v4 (@theme inline) and Next.js. */
+
+@import url("https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&display=swap");
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* light (vellum) — kept available for a future toggle */
+  --bg-0: #efe4cb;
+  --bg-1: #f1e7d0;
+  --bg-2: #f7efdc;
+  --bg-3: #fbf5e6;
+  --bg-4: #e6d8b8;
+  --fg-0: #2a1d0e;
+  --fg-1: #4a3a22;
+  --fg-2: rgba(42, 29, 14, 0.55);
+  --fg-3: rgba(42, 29, 14, 0.32);
+  --border-subtle:  rgba(42, 29, 14, 0.10);
+  --border-default: rgba(42, 29, 14, 0.18);
+  --border-strong:  rgba(42, 29, 14, 0.32);
+  --ink-300: #d8763d;
+  --ink-400: #b6471f;
+  --ink-500: #93371a;
+  --level-subtle:  #d8763d;
+  --level-natural: #b6471f;
+  --level-casual:  #7a2a10;
+  --frame: #2a1d0e;
+}
+
+[data-theme="dark"], html {
+  /* dark (obsidian / bone) — default */
+  --bg-0: #0e0c08;
+  --bg-1: #131008;
+  --bg-2: #1a160d;
+  --bg-3: #221d12;
+  --bg-4: #2b2515;
+  --fg-0: #ece4d0;
+  --fg-1: #b8ad94;
+  --fg-2: rgba(236, 228, 208, 0.50);
+  --fg-3: rgba(236, 228, 208, 0.28);
+  --border-subtle:  rgba(236, 228, 208, 0.06);
+  --border-default: rgba(236, 228, 208, 0.12);
+  --border-strong:  rgba(236, 228, 208, 0.22);
+  --ink-300: #c97c3f;
+  --ink-400: #d8763d;
+  --ink-500: #e89055;
+  --level-subtle:   #c97c3f;
+  --level-natural:  #d8763d;
+  --level-casual:   #e89055;
+  --frame: #050402;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-bg-0: var(--bg-0);
+  --color-bg-1: var(--bg-1);
+  --color-bg-2: var(--bg-2);
+  --color-bg-3: var(--bg-3);
+  --color-fg-0: var(--fg-0);
+  --color-fg-1: var(--fg-1);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-ink-300: var(--ink-300);
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-frame: var(--frame);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --font-display: "Cardo", "EB Garamond", Georgia, serif;
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  background: var(--frame);
+  color: var(--fg-0);
+  font-family: var(--font-display);
+  margin: 0;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+::selection { background: rgba(216, 118, 61, 0.30); color: var(--fg-0); }
+
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+button:hover { filter: brightness(1.08); }
+button:disabled:hover { filter: none; }
+
+/* the marginalium drop, used as a CSS-only mark anywhere it's needed */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+}
+
+.scribe-italic {
+  font-family: var(--font-display);
+  font-style: italic;
 }
